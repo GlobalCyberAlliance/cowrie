@@ -868,6 +868,7 @@ port = 10000
 identifier = abc123
 secret = secret
 debug=false
+instrument=true
 
 
 # VirusTotal output module

@@ -21,6 +21,8 @@ class Output(cowrie.core.output.Output):
     """
 
     channel = "cowrie.sessions"
+    instance = 0
+    instrument: bool = True
 
     def start(self):
         log.msg(
@@ -46,6 +48,8 @@ class Output(cowrie.core.output.Output):
 
         ident = CowrieConfig.get("output_hpfeeds3", "identifier")
         secret = CowrieConfig.get("output_hpfeeds3", "secret")
+        debug = CowrieConfig.getboolean("output_hpfeeds3", "debug")
+        instrument = CowrieConfig.getboolean("output_hpfeeds3", "instrument")
 
         self.meta = {}
 
@@ -112,6 +116,9 @@ class Output(cowrie.core.output.Output):
                 self.meta[session]["ttylog"] = ttylog.read().hex()
 
         elif entry["eventid"] == "cowrie.session.closed":
+            if self.instrument is True:
+                self.instance += 1
+                self.meta[session]["instance"] = self.instance
             meta = self.meta.pop(session, None)
             if meta:
                 log.msg("publishing metadata to hpfeeds", logLevel=logging.DEBUG)
